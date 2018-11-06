@@ -71,6 +71,7 @@ function getEmitter() {
                         info.handler.call(context);
                     }
                     info.callsCount++;
+                    console.info(info, event, context);
                 }
             });
         },
@@ -81,12 +82,17 @@ function getEmitter() {
          * @returns {Object}
          */
         emit: function (event) {
-            this.handleEvent(event);
+            let prefix = '';
+            const allEvents = [];
 
-            const pointIndex = event.indexOf('.');
-            if (pointIndex !== -1) {
-                this.handleEvent(event.slice(0, pointIndex));
+            for (let i = 0; i < event.length; i++) {
+                prefix += event[i];
+                if (i + 1 === event.length || event[i + 1] === '.') {
+                    allEvents.push(prefix);
+                }
             }
+
+            allEvents.reverse().forEach(curEvent => this.handleEvent(curEvent));
 
             return this;
         },

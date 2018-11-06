@@ -18,9 +18,15 @@ function getEmitter() {
             if (!this.functions.has(context)) {
                 this.functions.set(context, new Map());
             }
-            info.callsCount = 0;
-            info.handlers = [handler];
-            this.functions.get(context).set(event, info);
+            const contextMap = this.functions.get(context);
+            if (contextMap.has(event)) {
+                contextMap.get(event).handlers.push(handler);
+            }
+            else {
+                info.callsCount = 0;
+                info.handlers = [handler];
+                contextMap.set(event, info);
+            }
         },
 
         /**

@@ -58,12 +58,16 @@ function getEmitter() {
             return this;
         },
 
+        checkCallsCount: function (info) {
+            return !('times' in info && info.times > 0 && info.callsCount >= info.times) &&
+            !('frequency' in info && info.frequency > 0 && info.callsCount % info.frequency !== 0);
+        },
+
         handleEvent: function (event) {
             this.functions.forEach((infoByEvent, context) => {
                 if (infoByEvent.has(event)) {
                     const info = infoByEvent.get(event);
-                    if (!('times' in info && info.callsCount >= info.times) &&
-                    !('frequency' in info && info.callsCount % info.frequency !== 0)) {
+                    if (this.checkCallsCount(info)) {
                         info.handler.call(context);
                     }
                     info.callsCount++;

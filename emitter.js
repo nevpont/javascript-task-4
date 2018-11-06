@@ -14,11 +14,12 @@ function getEmitter() {
     return {
         functions: new Map(),
 
-        addFunc: function (event, context, info) {
+        addFunc: function (event, context, handler, info = {}) {
             if (!this.functions.has(context)) {
                 this.functions.set(context, new Map());
             }
             info.callsCount = 0;
+            info.handlers = [handler];
             this.functions.get(context).set(event, info);
         },
 
@@ -30,7 +31,7 @@ function getEmitter() {
          * @returns {Object}
          */
         on: function (event, context, handler) {
-            this.addFunc(event, context, { handler });
+            this.addFunc(event, context, handler);
 
             return this;
         },
@@ -68,7 +69,7 @@ function getEmitter() {
                 if (infoByEvent.has(event)) {
                     const info = infoByEvent.get(event);
                     if (this.checkCallsCount(info)) {
-                        info.handler.call(context);
+                        info.handlers.forEach(handler => handler.call(context));
                     }
                     info.callsCount++;
                     console.info(info, event, context);
@@ -107,7 +108,7 @@ function getEmitter() {
          * @returns {Object}
          */
         several: function (event, context, handler, times) {
-            this.addFunc(event, context, { handler, times });
+            this.addFunc(event, context, handler, { times });
 
             return this;
         },
@@ -122,7 +123,7 @@ function getEmitter() {
          * @returns {Object}
          */
         through: function (event, context, handler, frequency) {
-            this.addFunc(event, context, { handler, frequency });
+            this.addFunc(event, context, handler, { frequency });
 
             return this;
         }

@@ -21,8 +21,7 @@ function getEmitter() {
             const contextMap = this.functions.get(context);
             if (contextMap.has(event)) {
                 contextMap.get(event).handlers.push(handler);
-            }
-            else {
+            } else {
                 info.callsCount = 0;
                 info.handlers = [handler];
                 contextMap.set(event, info);
